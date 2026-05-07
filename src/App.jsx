@@ -11,15 +11,15 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import "./styles.css";
+import { categories as productCategories, products as promoProducts } from "./productData.js";
 import jetskiHero from "./assets/jetski-hero2.png";
 import acronisLogo from "./assets/logos/Acronis_logo.png";
 import breezeLogo from "./assets/logos/breeze_connect_logo.png";
-import epicJetskiLogo from "./assets/logos/epic jetski_logo.png";
+import epicAdventureLogo from "./assets/logos/epic-ADVENTURE_logo.png";
 import leaderCloudLogo from "./assets/logos/leader_cloud_logo.png";
 import microsoftLogo from "./assets/logos/microsoft_logo.png";
 import ubiquitiLogo from "./assets/logos/ubiquiti_logo.png";
 import cameraSecurityIcon from "./assets/icons/camera_security_icon.svg";
-import doorAccessIcon from "./assets/icons/door_access_icon.svg";
 import enterpriseGatewayIcon from "./assets/icons/enterprise_gateway_icon.svg";
 import enterpriseSwitchingIcon from "./assets/icons/enterprise_switching_icon.svg";
 import enterpriseWifiIcon from "./assets/icons/enterprise_wifi_icon.svg";
@@ -33,203 +33,20 @@ import leaderCloudAcronisImage from "./assets/cards/leader-cloud-acronis.png";
 import leaderCloudMicrosoftImage from "./assets/cards/leader-cloud-microsoft.png";
 
 const categoryIcons = {
-  Gateways: enterpriseGatewayIcon,
-  "Enterprise WiFi": enterpriseWifiIcon,
-  "Enterprise Switches": enterpriseSwitchingIcon,
-  "Camera Security": cameraSecurityIcon,
-  "Door Access": doorAccessIcon
+  "Cloud Gateways": enterpriseGatewayIcon,
+  "Access Points": enterpriseWifiIcon,
+  Switching: enterpriseSwitchingIcon,
+  "Camera Security": cameraSecurityIcon
 };
 
 const PROMO_END_DATE = new Date("2026-05-31T23:59:59+09:30").getTime();
-
-const categories = [
-  "All",
-  "Gateways",
-  "Enterprise WiFi",
-  "Enterprise Switches",
-  "Camera Security",
-  "Door Access"
-];
-
-const products = [
-  {
-    name: "Enterprise Fortress Gateway",
-    sku: "NHU-EFG",
-    category: "Gateways",
-    image: "https://cdn.ecomm.ui.com/products/65adb8bd-c318-45f9-8b9f-9c15fb025ec2/7321698a-e18b-4038-8ac1-f23d8d124c50.png",
-    storeUrl: "https://store.ui.com/us/en/products/efg",
-    href: "https://partner.leadersystems.com.au/products.html?tYHWOfesO6A=80ALiU3/EWP+sXvznNJILg==JCInKqvq4B3zVLkesx7v",
-    description: "25G Cloud Gateway with 500+ UniFi device / 5,000+ client support, 12.5 Gbps IPS routing, and complete high availability.",
-    features: ["25G gateway", "12.5 Gbps IPS", "High availability"]
-  },
-  {
-    name: "E7 Access Point",
-    sku: "NHU-E7",
-    category: "Enterprise WiFi",
-    image: "https://cdn.ecomm.ui.com/products/93ae773e-8969-4889-8591-2c227a31ac3f/09ff1a3a-0ce6-43ad-8188-607086944059.png",
-    storeUrl: "https://store.ui.com/us/en/category/wifi-flagship/products/e7",
-    modelUrl: "https://cdn.ecomm.ui.com/products/93ae773e-8969-4889-8591-2c227a31ac3f/c4c22b11-5831-4b5a-ba10-1cf33860c49a.glb",
-    href: "https://partner.leadersystems.com.au/products.html?8YqPO3Td9Y4=2+6ajxBPDLBFx+Td/Nns9Q==YnEGSyl/fvXb7eUsLos=",
-    description: "Enterprise-grade indoor access point with 10-stream WiFi 7 performance, a 10 GbE uplink, and a redundant GbE port.",
-    features: ["WiFi 7", "10 GbE uplink", "Redundant GbE"]
-  },
-  {
-    name: "E7 Campus Access Point",
-    sku: "NHU-E7-CAMPUS",
-    category: "Enterprise WiFi",
-    image: "https://cdn.ecomm.ui.com/products/67bc019d-eb07-4427-8989-b15bfd43cb5f/cbf37b3b-14d3-46f9-9017-0bbf83ec9444.png",
-    storeUrl: "https://store.ui.com/us/en/products/e7-campus-us",
-    modelUrl: "https://cdn.ecomm.ui.com/products/67bc019d-eb07-4427-8989-b15bfd43cb5f/5ec9167a-3b86-4195-b5ec-7e86bb806b57.glb",
-    href: "https://partner.leadersystems.com.au/products.html?oZK+OJ6MS8s=4dIiXR5mFEnxP6vPIHaA1A==RL32aaU+0FpgJhkKS6Bm4aIT2rVL",
-    description: "Indoor/outdoor tri-band WiFi 7 access point with PRISM active RF filtering, directional antennas, and high availability ports.",
-    features: ["Tri-band WiFi 7", "PRISM filtering", "Directional antennas"]
-  },
-  {
-    name: "E7 Audience Access Point",
-    sku: "NHU-E7-AUDIENCE",
-    category: "Enterprise WiFi",
-    image: "https://cdn.ecomm.ui.com/products/993e484e-4058-49eb-9cdb-4b5e89aec544/3a623234-838e-4663-81d5-0504347980eb.png",
-    storeUrl: "https://store.ui.com/us/en/products/e7-audience-us",
-    modelUrl: "https://cdn.ecomm.ui.com/products/993e484e-4058-49eb-9cdb-4b5e89aec544/4ec0fd78-d94b-4cbe-a95b-1237af64bcd0.glb",
-    href: "https://partner.leadersystems.com.au/products.html?zH4YyBj1kbA=r0qaf0QnASS6hC4afVNtfw==j/+nos3iFXqnHhFJy5RRiRHKdNSNUbw=",
-    description: "High-density indoor/outdoor access point with 12-stream 5 GHz and 6 GHz WiFi 7 performance and a 10 GbE uplink.",
-    features: ["High density", "12-stream radio", "10 GbE uplink"]
-  },
-  {
-    name: "Enterprise Campus Aggregation",
-    sku: "NHU-ECS-AGGREGATION",
-    category: "Enterprise Switches",
-    image: "https://cdn.ecomm.ui.com/products/82c1c564-0e08-4b27-a7b9-95729cca00bd/273218d0-162e-4389-8143-686302547137.png",
-    storeUrl: "https://store.ui.com/us/en/category/switching-enterprise/products/ecs-aggregation",
-    href: "https://partner.leadersystems.com.au/products.html?H5CKjLrNrjg=uuJxW+B9uOqFF3xp5Zb7kw==esc6BU6zUoR27cNnllwjWh8XvQD/+jQTyYkL",
-    description: "1.8 Tbps high-density 100G/25G Layer 3 Etherlighting aggregation switch with MC-LAG support.",
-    features: ["1.8 Tbps switching", "100G / 25G", "MC-LAG support"]
-  },
-  {
-    name: "Enterprise Campus 24 PoE",
-    sku: "NHU-ECS-24-POE",
-    category: "Enterprise Switches",
-    image: "https://cdn.ecomm.ui.com/products/f83443e3-38b7-415b-85cd-e3da1d0c044c/6cae8c8d-f8ab-4207-b0f9-111898f30f66.png",
-    storeUrl: "https://store.ui.com/us/en/category/switching-enterprise/products/ecs-24-poe",
-    href: "https://partner.leadersystems.com.au/products.html?ezvv9KviA2s=XrO6CY8P2N8n2QuqmxB9MA==usmH5doyuTbc1ZkiTqRxr3QThfynhQ==",
-    description: "24-port Layer 3 Etherlighting PoE+++ switch with high-capacity 10 GbE RJ45 and 25G SFP28 connections.",
-    features: ["24 PoE+++ ports", "Layer 3", "25G SFP28"]
-  },
-  {
-    name: "Enterprise Campus 48 PoE",
-    sku: "NHU-ECS-48-POE",
-    category: "Enterprise Switches",
-    image: "https://cdn.ecomm.ui.com/products/c0e18508-feb3-4d93-93d7-2a022815cfac/feb987d6-1eb6-497a-83fd-af24f4116192.png",
-    storeUrl: "https://store.ui.com/us/en/category/switching-enterprise/products/ecs-48-poe",
-    href: "https://partner.leadersystems.com.au/products.html?rKR7vHBdZe0=if/RtIV9eDTrXNWUovljZw==zGe5KKeAk+ehuRVbOpUMCh2P9MTK7A==",
-    description: "48-port Layer 3 Etherlighting PoE+++ switch with high-capacity 10 GbE RJ45 and 25G SFP28 connections.",
-    features: ["48 PoE+++ ports", "10 GbE RJ45", "25G uplinks"]
-  },
-  {
-    name: "Gateway Enterprise",
-    sku: "NHU-UXG-ENTERPRISE",
-    category: "Gateways",
-    image: "https://cdn.ecomm.ui.com/products/3dbb7c83-aa76-4110-9ddf-7bfd7d8511cc/53b4a089-6728-4971-9668-3d76513637f9.png",
-    storeUrl: "https://store.ui.com/us/en/category/all-cloud-gateways/products/uxg-enterprise",
-    href: "https://partner.leadersystems.com.au/products.html?Jwa9uNNlmEg=hSE6BqE7fzbJlgzlM0w0bw==3vZnGLn8vtm7SODCl4zIPu42j4OCI8U3Dts=",
-    description: "25G independent gateway with multi-WAN load balancing, 12.5 Gbps IPS routing, and redundant hot-swap PSUs.",
-    features: ["Multi-WAN", "12.5 Gbps IPS", "Hot-swap PSUs"]
-  },
-  {
-    name: "Enterprise NVR",
-    sku: "NHU-ENVR",
-    category: "Camera Security",
-    image: "https://cdn.ecomm.ui.com/products/69d591b5-0c1b-4b75-9361-0f3237df94a7/80b3e786-8416-4a75-a98a-1b3297a1a6b6.png",
-    storeUrl: "https://store.ui.com/us/en/category/door-access-nvrs/products/envr",
-    modelUrl: "https://cdn.ecomm.ui.com/products/69d591b5-0c1b-4b75-9361-0f3237df94a7/6e9d4743-cf96-44d7-9e9c-bf2aada3c2cc.glb",
-    href: "https://partner.leadersystems.com.au/products.html?cLCb++FxN8Y=dpur/qk9ibdjqYm16HmryA==E5p23JuqJjjP3AB8OJcR1g==",
-    description: "3U NVR with 16 drive bays, supporting up to 70 4K cameras or 210 Full HD cameras.",
-    features: ["16 drive bays", "70 4K cameras", "3U rackmount"]
-  },
-  {
-    name: "Enterprise NVR Core",
-    sku: "NHU-ENVR-CORE",
-    category: "Camera Security",
-    image: "https://cdn.ecomm.ui.com/products/694c1676-ffe5-4c8f-9ccc-c73eb86309c3/3f8ef500-8a33-4d43-96d6-e4526693999e.png",
-    storeUrl: "https://store.ui.com/us/en/category/door-access-nvrs/products/envr-core",
-    modelUrl: "https://cdn.ecomm.ui.com/products/694c1676-ffe5-4c8f-9ccc-c73eb86309c3/f2d5add7-50f3-4e00-90c6-ea3c6a698b57.glb",
-    href: "https://partner.leadersystems.com.au/products.html?h8hGXWe3lL0=V4Vej8xv9XOj1GwRnGV5zQ==vLcOuaVMFjLU4KyYbQbKK/3779tK",
-    description: "3U UniFi Protect NVR with 16-bay support, up to 300 4K or 500 Full HD cameras, hot-swappable power supplies, and expansion support.",
-    features: ["16-bay storage", "300 4K cameras", "Expandable"]
-  },
-  {
-    name: "G6 Pro Dome",
-    sku: "NHU-UVC-G6-PRO-DOME",
-    category: "Camera Security",
-    image: "https://cdn.ecomm.ui.com/products/ed2301d1-7bc1-4569-b257-0ed1df0ed4d5/a695c111-28c9-4b90-a73c-8352dc104bfd.png",
-    storeUrl: "https://store.ui.com/us/en/category/cameras-dome/products/uvc-g6-pro-dome",
-    modelUrl: "https://cdn.ecomm.ui.com/products/ed2301d1-7bc1-4569-b257-0ed1df0ed4d5/cfeb3534-1649-4850-b2a3-10615d0e4b6d.glb",
-    href: "https://partner.leadersystems.com.au/categories.html?JkEFOkF/byk=1AZFzqVqp9IBxlioYvbVyQ==XL8bb+1hw7V/JxCGiHprdM9tk3sZijaJxwVZH9/oNJijAeM+PVo7eAevF++3M9q86JSbtPLt7/fU8K8tR40ifXNLe/XA1ZQWiRbYONN9Arnagp+jIq8UlMAjXJk8tnR+C3MqHVxyKQ==",
-    description: "All-weather vandal-proof 4K PoE+ camera with a Multi-TOPS AI engine, 2.36x optical zoom, large sensor, and long-range IR night vision.",
-    features: ["4K PoE+", "AI engine", "Optical zoom"]
-  },
-  {
-    name: "G6 Dome",
-    sku: "NHU-UVC-G6-DOME",
-    category: "Camera Security",
-    image: "https://cdn.ecomm.ui.com/products/2f241968-e3be-42c2-98fc-7d879b360d25/1e661d71-79eb-4f79-9f17-2199b3655bb4.png",
-    storeUrl: "https://store.ui.com/us/en/category/cameras-dome/products/uvc-g6-dome",
-    modelUrl: "https://cdn.ecomm.ui.com/products/2f241968-e3be-42c2-98fc-7d879b360d25/7d307414-6469-43b6-bc40-c1a8604de274.glb",
-    href: "https://partner.leadersystems.com.au/categories.html?kSQ8LB32yCk=8MAu1sonyuj0NoMLbVh78g==bOyXbxREWMoT88bfi543gdAuDo+zu4sFULmYT4sFU9ohdYoMPb+lijrQ2nutB65+n9z9kmJfHzThkSPnbWC+RYeD9QybiY/K8a8zeqphUFDHiAe8T+13FRpe9e6vv4bSIQUt",
-    description: "All-weather vandal-proof 4K PoE camera with an 8MP image sensor, Multi-TOPS AI Engine, and long-range IR night vision.",
-    features: ["4K PoE", "8MP sensor", "IR night vision"]
-  },
-  {
-    name: "AI PTZ Precision Camera",
-    sku: "NHU-UVC-AI-PTZ-PRECISION",
-    category: "Camera Security",
-    image: "https://cdn.ecomm.ui.com/products/188dd3fc-5988-4878-81c5-473f9dcdf017/d56c85a3-ff72-496f-a3fc-785ebad7a5b5.png",
-    storeUrl: "https://store.ui.com/us/en/category/cameras-ptz/products/uvc-ai-ptz-precision",
-    modelUrl: "https://cdn.ecomm.ui.com/products/188dd3fc-5988-4878-81c5-473f9dcdf017/a18dcb1e-0a27-4e33-8b62-949d13362883.glb",
-    href: "https://partner.leadersystems.com.au/categories.html?R+a4WaWgF2s=EBbUOl5+r8EWGQyUH7Ij4A==5RTK+DCyWKEen5Sh9oj86wbsmAdiQGmNHEgA6W6fP94H43ekjJ5fxOC+0jzuohvK8f5AXj1ONTPoy09cQY7MbpGjV5v7RVICeIDT3TuoNV/u3pfkzP9lMRune/zLwsbTckTX5w==",
-    description: "Industrial-grade 4K PTZ camera with enhanced AI capabilities, 31x optical zoom, adaptive IR night vision, and LiDAR autofocus.",
-    features: ["31x optical zoom", "LiDAR autofocus", "Adaptive IR"]
-  },
-  {
-    name: "Retrofit Hub",
-    sku: "NHU-UA-RETROFIT-HUB-2",
-    category: "Door Access",
-    image: "https://cdn.ecomm.ui.com/products/f84db3e4-fd4e-466e-970e-018ee7c3db08/b42a534d-81a9-48bb-813d-3cac00ffc9ce.png",
-    storeUrl: "https://store.ui.com/us/en/products/ua-retrofit-hub-2",
-    modelUrl: "https://cdn.ecomm.ui.com/products/f84db3e4-fd4e-466e-970e-018ee7c3db08/ea261f82-f9f6-4e63-8604-1cb8e266452d.glb",
-    href: "https://partner.leadersystems.com.au/products.html?2hXfME0HbvM=+EzWIsTxPx2n/V4/IpLkmQ==flWufESnqgoiMoGWxqRpsmIK3b7IACPrCcGSvS0=",
-    description: "DC-powered hub that supports Wiegand and OSDP readers and provides entry and exit control for up to two doors.",
-    features: ["Two-door control", "Wiegand / OSDP", "DC powered"]
-  },
-  {
-    name: "Retrofit Reader",
-    sku: "NHU-UA-RETROFIT-READER",
-    category: "Door Access",
-    image: "https://cdn.ecomm.ui.com/products/bad51249-9b36-4d54-8673-90fa926fd410/2fafa9d0-af61-455a-977e-cf12454506d4.png",
-    storeUrl: "https://store.ui.com/us/en/category/door-access-reader/products/ua-retrofit-reader",
-    modelUrl: "https://cdn.ecomm.ui.com/products/bad51249-9b36-4d54-8673-90fa926fd410/60259ce9-ad20-4288-a921-de86a6c83464.glb",
-    href: "https://partner.leadersystems.com.au/categories.html?h13ECVghvKA=S/bHNSRO5qAd7lrel0qzpw==kjbfb8WHfutrJwIJ9K6Q7Tgub5aYMibeu1ncEtJofpEb+G63bBi5ljp7fyHsUOMiCFb08IH3GkbopE3nSTU8MiVWL86JEkO7tYoOlhCo2kMnVGmXBukf3ybL1QGOdM5s8iCmLhvYpl6mIg==",
-    description: "Indoor/outdoor OSDP reader with NFC Card and Touch Pass support, compatible with the UniFi Retrofit Hub using existing cabling.",
-    features: ["OSDP reader", "NFC Card", "Touch Pass"]
-  },
-  {
-    name: "Retrofit PSU 12V",
-    sku: "NHU-UACC-RETROFIT-PSU-12V",
-    category: "Door Access",
-    image: "https://cdn.ecomm.ui.com/products/6278fb7c-a460-448f-afc8-02ed1d14f718/82f2fa1c-1d7f-4b8e-83b6-9c939f76e8f8.png",
-    storeUrl: "https://store.ui.com/us/en/category/door-access-reader/products/uacc-retrofit-psu-12v",
-    href: "https://partner.leadersystems.com.au/products.html?9zB5Co/NXUM=54brDODz0hZa4CdxV3EXFA==Gks08Jk8Ur3df6RicHuKCFmbZT8seJhMLeHHVW5XaULS",
-    description: "12V power supply with optional SLA backup battery support, compatible with the UniFi Retrofit Hub.",
-    features: ["12V power", "Battery backup", "Hub compatible"]
-  }
-];
 
 const entryWays = [
   {
     number: "01",
     brand: "Ubiquiti",
     title: "Stack Product Tickets",
-    description: "Buy qualifying Enterprise or Enterprise Campus products. Every SKU purchased equals one ticket into the spin-to-win draw.",
+    description: "Buy any qualifying UniFi product. Spend minimum $2.5k from list of sku to get 1 ticket into draw.",
     footnote: "Each SKU = +1 ticket.",
     image: entryUbiquitiImage,
     logo: ubiquitiLogo,
@@ -248,9 +65,9 @@ const entryWays = [
   {
     number: "03",
     brand: "Leader Cloud",
-    title: "Scale Cloud MRR",
-    description: "Activate $30k MRR on Microsoft or Acronis before the promo window closes.",
-    footnote: "New partners only. Must not churn before 30 May.",
+    title: "ACTIVATE LEADER CLOUD",
+    description: "Activate $30k on Microsoft or Acronis before the promo window closes.",
+    footnote: "Must activate before 30 May.",
     image: entryLeaderCloudImage,
     logo: leaderCloudLogo,
     href: "#leader-cloud"
@@ -464,7 +281,7 @@ function App() {
   const [viewerModes, setViewerModes] = useState({});
 
   const visibleProducts = useMemo(() => {
-    return activeCategory === "All" ? products : products.filter((product) => product.category === activeCategory);
+    return activeCategory === "All" ? promoProducts : promoProducts.filter((product) => product.category === activeCategory);
   }, [activeCategory]);
 
   const setMode = (sku, mode) => {
@@ -475,7 +292,7 @@ function App() {
     <>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="LEADER promo home">
-          <img src={epicJetskiLogo} alt="Epic Jetski Adventure Promo" />
+          <img src={epicAdventureLogo} alt="Epic Adventure Promo" />
         </a>
         <nav>
           <a href="#ways">How to Enter</a>
@@ -496,7 +313,7 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1>Win a seat on an epic Jetski Adventure Tour.</h1>
+            <h1>Win a seat on an epic Jetski Adventure.</h1>
             <p className="hero-copy">A 3-hour adrenaline hit off Adelaide's coastline with partners and customers, followed by lunch, drinks, and a BBQ after docking.</p>
             <div className="hero-actions">
               <a className="primary-button" href="#ways">
@@ -520,7 +337,7 @@ function App() {
 
         <section className="page-section" id="ways">
           <SectionIntro kicker="Promo mechanics" title="Three ways to grab a seat">
-            Each pathway gets a high-impact card with a vendor visual now, and can swap to official creative later.
+            Hit the target during the promo window and you're in the draw.
           </SectionIntro>
           <motion.div className="entry-grid" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}>
             {entryWays.map((way) => (
@@ -539,13 +356,13 @@ function App() {
 
         <section className="page-section" id="ubiquiti">
           <SectionIntro kicker="Ubiquiti spin-to-win" title="QUALIFYING UBIQUITI PRODUCTS">
-            Buy any qualifying Enterprise or Enterprise Campus product. Every SKU purchased equals one ticket into the spin-to-win draw.
+            Buy any qualifying UniFi product. Spend minimum $2.5k from list of sku to get 1 ticket into draw.
           </SectionIntro>
 
           <div className="tabs-wrap">
             <Filter size={18} />
             <div className="category-tabs" role="tablist" aria-label="Ubiquiti product categories">
-              {categories.map((category) => {
+              {productCategories.map((category) => {
                 const icon = categoryIcons[category];
                 return (
                   <button
@@ -619,8 +436,8 @@ function App() {
         </section>
 
         <section className="page-section cloud-section" id="leader-cloud">
-          <SectionIntro kicker="$30k MRR pathway" title="LEADER CLOUD CHURN">
-            Activate $30k MRR on Microsoft or Acronis before the promo window closes. New partners only. Must not churn before 30 May.
+          <SectionIntro kicker="ACTIVATE $30K" title="LEADER CLOUD">
+            Must activate before 30 May.
           </SectionIntro>
           <div className="cloud-split">
             <motion.article className="cloud-card" whileHover={{ y: -8 }}>
@@ -639,7 +456,7 @@ function App() {
               </div>
               <div className="cloud-copy">
                 <h3>Acronis</h3>
-                <p>Build new Acronis recurring revenue through Leader Cloud and contribute toward the $30k MRR target.</p>
+                <p>Build new Acronis recurring revenue through Leader Cloud and contribute toward the $30k target.</p>
                 <a className="buy-button" href="https://leadercloud.com.au/acronis/" target="_blank" rel="noopener">Learn More <ChevronRight size={15} /></a>
               </div>
             </motion.article>

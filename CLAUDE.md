@@ -13,6 +13,12 @@ python serve_wireframe.py   # Alternative static server for dist/ at :5173
 
 No test runner or linter is configured.
 
+## Deployment
+
+Pushes to `main` auto-deploy to GitHub Pages via `.github/workflows/deploy.yml` (build → upload `dist/` artifact → `actions/deploy-pages@v4`). Live URL: https://leadermarketing.github.io/leader-epic-jetski/.
+
+`vite.config.js` sets `base: '/leader-epic-jetski/'` because Pages serves the site under that subpath. If the repo is renamed or moved to a custom domain, update `base` to match — otherwise asset URLs in the built `dist/` will 404.
+
 ## Architecture
 
 Single-page React promotional landing page built with Vite. No routing — the whole site is one scrollable page.
