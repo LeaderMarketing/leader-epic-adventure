@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/leader-epic-jetski/',
+  base: '/leader-epic-adventure/',
 })
