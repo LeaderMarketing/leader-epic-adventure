@@ -7,7 +7,8 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test:products": "node src/productData.test.mjs"
+    "test:products": "node src/productData.test.mjs",
+    "test:responsive": "node src/responsiveLayout.test.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.2.0",

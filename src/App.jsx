@@ -7,9 +7,13 @@ import {
   Filter,
   Image as ImageIcon,
   Layers3,
-  MousePointer2
+  Mail,
+  Menu,
+  MousePointer2,
+  Phone,
+  X
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./styles.css";
 import { categories as productCategories, products as promoProducts } from "./productData.js";
 import jetskiHero from "./assets/jetski-hero2.png";
@@ -39,7 +43,7 @@ const categoryIcons = {
   "Camera Security": cameraSecurityIcon
 };
 
-const PROMO_END_DATE = new Date("2026-05-31T23:59:59+09:30").getTime();
+const PROMO_END_DATE = new Date("2026-06-30T23:59:59+09:30").getTime();
 
 const entryWays = [
   {
@@ -67,10 +71,34 @@ const entryWays = [
     brand: "Leader Cloud",
     title: "ACTIVATE LEADER CLOUD",
     description: "Activate $30k on Microsoft or Acronis before the promo window closes.",
-    footnote: "Must activate before 30 May.",
+    footnote: "Must Activate before 30 June 2026.",
     image: entryLeaderCloudImage,
     logo: leaderCloudLogo,
     href: "#leader-cloud"
+  }
+];
+
+const teamContacts = [
+  {
+    team: "Leader Sales",
+    phone: "1300 453 233",
+    phoneHref: "tel:1300453233",
+    email: "sales@leadersystems.com.au",
+    emailHref: "mailto:sales@leadersystems.com.au"
+  },
+  {
+    team: "Breeze Connect",
+    phone: "1300 127 339",
+    phoneHref: "tel:1300127339",
+    email: "help@breezeconnect.com.au",
+    emailHref: "mailto:help@breezeconnect.com.au"
+  },
+  {
+    team: "Leader Cloud",
+    phone: "1300 537 277",
+    phoneHref: "tel:1300537277",
+    email: "help@leadercloud.com.au",
+    emailHref: "mailto:help@leadercloud.com.au"
   }
 ];
 
@@ -127,6 +155,62 @@ function getCountdownParts() {
   return { days, hours, minutes, seconds };
 }
 
+function useDragScroll() {
+  const railRef = useRef(null);
+  const dragState = useRef({ active: false, moved: false, startX: 0, scrollLeft: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const stopDrag = (event) => {
+    const rail = railRef.current;
+    if (rail?.hasPointerCapture?.(event.pointerId)) {
+      rail.releasePointerCapture(event.pointerId);
+    }
+    dragState.current.active = false;
+    setIsDragging(false);
+  };
+
+  return {
+    dragClassName: `draggable-rail${isDragging ? " is-dragging" : ""}`,
+    railProps: {
+      ref: railRef,
+      onPointerDown: (event) => {
+        if (event.button !== undefined && event.button !== 0) return;
+        const rail = railRef.current;
+        if (!rail || rail.scrollWidth <= rail.clientWidth) return;
+
+        dragState.current = {
+          active: true,
+          moved: false,
+          startX: event.clientX,
+          scrollLeft: rail.scrollLeft
+        };
+        setIsDragging(true);
+        rail.setPointerCapture?.(event.pointerId);
+      },
+      onPointerMove: (event) => {
+        const rail = railRef.current;
+        const state = dragState.current;
+        if (!rail || !state.active) return;
+
+        const deltaX = event.clientX - state.startX;
+        if (Math.abs(deltaX) > 4) {
+          state.moved = true;
+        }
+        rail.scrollLeft = state.scrollLeft - deltaX;
+      },
+      onPointerUp: stopDrag,
+      onPointerCancel: stopDrag,
+      onPointerLeave: stopDrag,
+      onClickCapture: (event) => {
+        if (!dragState.current.moved) return;
+        event.preventDefault();
+        event.stopPropagation();
+        dragState.current.moved = false;
+      }
+    }
+  };
+}
+
 function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState(getCountdownParts);
   const [visible, setVisible] = useState(true);
@@ -151,7 +235,7 @@ function CountdownTimer() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.25 }}
-      aria-label="Countdown to promo close on 31 May 2026"
+      aria-label="Countdown to promo close on 30 June 2026"
     >
       <span className="countdown-label">Promo closes in</span>
       <div className="countdown-units">
@@ -279,6 +363,10 @@ function ProductViewer({ product, mode, onModeChange }) {
 function App() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [viewerModes, setViewerModes] = useState({});
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const entryRail = useDragScroll();
+  const categoryRail = useDragScroll();
+  const serviceRail = useDragScroll();
 
   const visibleProducts = useMemo(() => {
     return activeCategory === "All" ? promoProducts : promoProducts.filter((product) => product.category === activeCategory);
@@ -288,19 +376,30 @@ function App() {
     setViewerModes((current) => ({ ...current, [sku]: mode }));
   };
 
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="LEADER promo home">
+      <header className={`site-header ${isMenuOpen ? "menu-open" : ""}`}>
+        <a className="brand" href="#top" aria-label="LEADER promo home" onClick={closeMenu}>
           <img src={epicAdventureLogo} alt="Epic Adventure Promo" />
         </a>
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-label="Toggle navigation menu"
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen((current) => !current)}
+        >
+          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
         <nav>
-          <a href="#ways">How to Enter</a>
-          <a href="#ubiquiti">Ubiquiti</a>
-          <a href="#breeze">Breeze Connect</a>
-          <a href="#leader-cloud">Leader Cloud</a>
+          <a href="#ways" onClick={closeMenu}>How to Enter</a>
+          <a href="#ubiquiti" onClick={closeMenu}>Ubiquiti</a>
+          <a href="#breeze" onClick={closeMenu}>Breeze Connect</a>
+          <a href="#leader-cloud" onClick={closeMenu}>Leader Cloud</a>
         </nav>
-        <a className="header-cta" href="#enquiry">Enquire Now</a>
+        <a className="header-cta" href="#enquiry" onClick={closeMenu}>Enquire Now</a>
       </header>
 
       <main id="top">
@@ -339,7 +438,7 @@ function App() {
           <SectionIntro kicker="Promo mechanics" title="Three ways to grab a seat">
             Hit the target during the promo window and you're in the draw.
           </SectionIntro>
-          <motion.div className="entry-grid" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}>
+          <motion.div className={`entry-grid ${entryRail.dragClassName}`} variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} {...entryRail.railProps}>
             {entryWays.map((way) => (
               <motion.a className="entry-card" variants={cardVariants} key={way.brand} href={way.href} aria-label={`Go to ${way.brand} section`}>
                 <EntryVisual image={way.image} brand={way.brand} number={way.number} />
@@ -361,7 +460,7 @@ function App() {
 
           <div className="tabs-wrap">
             <Filter size={18} />
-            <div className="category-tabs" role="tablist" aria-label="Ubiquiti product categories">
+            <div className={`category-tabs ${categoryRail.dragClassName}`} role="tablist" aria-label="Ubiquiti product categories" {...categoryRail.railProps}>
               {productCategories.map((category) => {
                 const icon = categoryIcons[category];
                 return (
@@ -419,7 +518,7 @@ function App() {
           <SectionIntro kicker="$5,000 MRR pathway" title="BREEZE CONNECT">
             Activate $5,000 monthly recurring revenue on SIP, Wholesale, or Microsoft Teams Operator Connect during the promo window.
           </SectionIntro>
-          <motion.div className="service-grid" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}>
+          <motion.div className={`service-grid ${serviceRail.dragClassName}`} variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} {...serviceRail.railProps}>
             {breezeServices.map((service) => {
               return (
                 <motion.a className="service-card" variants={cardVariants} href={service.url} target="_blank" rel="noopener" key={service.title}>
@@ -437,7 +536,14 @@ function App() {
 
         <section className="page-section cloud-section" id="leader-cloud">
           <SectionIntro kicker="ACTIVATE $30K" title="LEADER CLOUD">
-            Must activate before 30 May.
+            <>
+              Activate $30k on Microsoft or Acronis before the promo window closes.
+              <br />
+              <br />
+              New partners only.
+              <br />
+              Must be activated before 30 June 2026.
+            </>
           </SectionIntro>
           <div className="cloud-split">
             <motion.article className="cloud-card" whileHover={{ y: -8 }}>
@@ -467,23 +573,29 @@ function App() {
           <div>
             <p className="kicker">Talk to the team</p>
             <h2>NEED ASSISTANCE?</h2>
-            <p>Speak to your account manager to know more about how you can grab a seat to our epic jetski adventure promo or send us an enquiry!</p>
+            <p>Speak to your account manager to know more about how you can grab a seat to our epic jetski adventure promo, or contact the right team directly.</p>
           </div>
-          <form>
-            <label>Name<input type="text" placeholder="Your name" /></label>
-            <label>Company<input type="text" placeholder="Company name" /></label>
-            <label>Email<input type="email" placeholder="you@example.com" /></label>
-            <label>Phone<input type="tel" placeholder="Optional" /></label>
-            <label className="full">Interested pathway<select><option>Ubiquiti qualifying SKUs</option><option>Breeze Connect</option><option>Leader Cloud</option><option>General question</option></select></label>
-            <label className="full">Message<textarea placeholder="Tell us what you are planning to activate or purchase." /></label>
-            <button className="primary-button full" type="button">SUBMIT ENQUIRY <ArrowRight size={18} /></button>
-          </form>
+          <div className="contact-panel" aria-label="Promo contact details">
+            {teamContacts.map((contact) => (
+              <section className="contact-group" key={contact.team}>
+                <h3>{contact.team}</h3>
+                <a href={contact.phoneHref}>
+                  <Phone size={18} />
+                  {contact.phone}
+                </a>
+                <a href={contact.emailHref}>
+                  <Mail size={18} />
+                  {contact.email}
+                </a>
+              </section>
+            ))}
+          </div>
         </section>
       </main>
 
       <footer>
         <span>Copyright 2026 LEADER Computers</span>
-        <span>Promotion runs 1 April 2026 - 31 May 2026. Terms and conditions apply.</span>
+        <span>Promotion runs 1 May 2026 - 30 June 2026. Terms and conditions apply.</span>
       </footer>
 
       <CountdownTimer />
