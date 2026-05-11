@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Include static (non-React) version alongside the build
+        run: cp -r static dist/static
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
