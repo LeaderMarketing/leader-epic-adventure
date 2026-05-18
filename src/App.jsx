@@ -552,7 +552,7 @@ function App() {
               </div>
               <div className="cloud-copy">
                 <h3>Microsoft</h3>
-                <p>Activate qualifying Microsoft cloud monthly recurring revenue through Leader Cloud before the promo window closes.</p>
+                <p>Awarded to the reseller with the highest Business Premium growth.</p>
                 <a className="buy-button" href="https://leadercloud.com.au/microsoft/" target="_blank" rel="noopener">Learn more <ChevronRight size={15} /></a>
               </div>
             </motion.article>
@@ -562,7 +562,7 @@ function App() {
               </div>
               <div className="cloud-copy">
                 <h3>Acronis</h3>
-                <p>Build new Acronis recurring revenue through Leader Cloud and contribute toward the $30k target.</p>
+                <p>Awarded to the reseller with the most M365 Backup deployments.</p>
                 <a className="buy-button" href="https://leadercloud.com.au/acronis/" target="_blank" rel="noopener">Learn More <ChevronRight size={15} /></a>
               </div>
             </motion.article>
