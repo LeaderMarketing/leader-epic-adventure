@@ -70,7 +70,7 @@ const entryWays = [
     number: "03",
     brand: "Leader Cloud",
     title: "ACTIVATE LEADER CLOUD",
-    description: "Activate $30k on Microsoft or Acronis before the promo window closes.",
+    description: "Awarded to the reseller with the highest Microsoft Business Premium growth or the most Acronis M365 Backup deployments.",
     footnote: "Must Activate before 30 June 2026.",
     image: entryLeaderCloudImage,
     logo: leaderCloudLogo,
@@ -264,7 +264,7 @@ function SectionIntro({ kicker, title, children }) {
         <p className="kicker">{kicker}</p>
         <h2>{title}</h2>
       </div>
-      <p>{children}</p>
+      {children && <p>{children}</p>}
     </motion.div>
   );
 }
@@ -535,16 +535,7 @@ function App() {
         </section>
 
         <section className="page-section cloud-section" id="leader-cloud">
-          <SectionIntro kicker="ACTIVATE $30K" title="LEADER CLOUD">
-            <>
-              Activate $30k on Microsoft or Acronis before the promo window closes.
-              <br />
-              <br />
-              New partners only.
-              <br />
-              Must be activated before 30 June 2026.
-            </>
-          </SectionIntro>
+          <SectionIntro kicker="ACTIVATE & WIN" title="LEADER CLOUD" />
           <div className="cloud-split">
             <motion.article className="cloud-card" whileHover={{ y: -8 }}>
               <div className="cloud-image">
